@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657993, g: 0.49641532, b: 0.57481784, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465803, g: 0.49641615, b: 0.574819, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -320,7 +320,7 @@ Camera:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_RenderingPath: 3
+  m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
@@ -355,7 +355,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09d4d958c7dae3f4a91c7f264bc2aaca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Slices: 0
+  Slices: 256
   Samples: 0
   matSource: {fileID: 11400000, guid: a3d4d3ff3e3f0de4a8a2e721e0bac10d, type: 2}
 --- !u!1 &1485762047

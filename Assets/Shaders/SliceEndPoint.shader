@@ -44,6 +44,8 @@
 				return float4(-1,-1,1,1) + float4(1,1,-1,-1) / _ScreenParams.xyxy;
 			}
 
+
+
 			fixed4 frag (v2f i) : SV_Target
 			{
 				float2 lightPos = ComputeScreenPos(_WorldSpaceLightPos0);
@@ -64,7 +66,9 @@
 				float2 exitPointPosOnBnd = float2(dot(boundaryXPos, bBoundaryFlags), dot(boundaryYPos, bBoundaryFlags));
 				float2 exitPoint = lerp(outermostScreenPixelCoords.xy, outermostScreenPixelCoords.zw, exitPointPosOnBnd);
 
-				fixed4 col = 1; 
+				fixed4 col = 0;
+				if(length(uv - exitPoint < 0.05))
+					col = float4(1,1,0,0); 
 				return col;
 			}
 			ENDCG
