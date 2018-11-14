@@ -27,7 +27,7 @@ public class ScatteringEffects : MonoBehaviour {
         cam.AddCommandBuffer(CameraEvent.BeforeImageEffects, cmd);
         print("Cb registed!");
 
-        
+        InitVariable();
     }
 
     private void OnPreRender()
@@ -40,11 +40,17 @@ public class ScatteringEffects : MonoBehaviour {
 
     }
 
+    private void InitVariable()
+    {
+        Shader.SetGlobalInt("SliceNum", Slices);
+        Shader.SetGlobalInt("SamplerNum", Samples);
+    }
+
     private void RenderSliceEndPoint(CommandBuffer cb)
     {
         int texId = Shader.PropertyToID(TextureSources.sliceEndPoints);
         Material mat = matSource.sliceEndPointMat;
-        cb.GetTemporaryRT(texId, Slices, 1, 0);
+        cb.GetTemporaryRT(texId, Slices, 256, 0);
         cb.SetRenderTarget(texId);
         cb.Blit(texId, texId, mat);
 

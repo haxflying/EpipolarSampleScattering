@@ -16,6 +16,7 @@
 			#pragma fragment frag
 			
 			#include "UnityCG.cginc"
+			#include "Common.cginc"
 
 			struct appdata
 			{
@@ -38,37 +39,24 @@
 			}
 			
 			sampler2D _MainTex;
-
-			float4 GetOutermostScreenPixelCoords()
-			{
-				return float4(-1,-1,1,1) + float4(1,1,-1,-1) / _ScreenParams.xyxy;
-			}
-
-
-
+			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				float2 lightPos = ComputeScreenPos(_WorldSpaceLightPos0);
-				float2 uv = i.uv;
-				float epipolarSlice = saturate(uv.x - 0.5f/256);
-				uint uiBoundary = clamp(floor(epipolarSlice * 4), 0, 3);
-				float posOnBoundary = frac(epipolarSlice * 4);
-				fixed4 bBoundaryFlags = fixed4(uiBoundary.x == 0, uiBoundary.x == 1, uiBoundary.x == 2, uiBoundary.x == 3);
-				float4 outermostScreenPixelCoords = GetOutermostScreenPixelCoords();
-				fixed4 isInvalidBoundary = fixed4((lightPos.xyxy - outermostScreenPixelCoords.xyzw) * float4(1,1,-1,-1) <= 0);
+				float2 lightDir = ComputeScreenPos(_WorldSpaceLightPos0);
+				lightDir = normalize(lightDir);
 
-				if(dot(isInvalidBoundary, bBoundaryFlags))
-					return 0;
-
-				float4 boundaryXPos = float4(0, posOnBoundary, 1, 1 - posOnBoundary);
-				float4 boundaryYPos = float4(1 - posOnBoundary, 0, posOnBoundary, 1);
-
-				float2 exitPointPosOnBnd = float2(dot(boundaryXPos, bBoundaryFlags), dot(boundaryYPos, bBoundaryFlags));
-				float2 exitPoint = lerp(outermostScreenPixelCoords.xy, outermostScreenPixelCoords.zw, exitPointPosOnBnd);
+				fixed isLightDirLeft = dot(lightDir, float2(1,0)) < 0;
+				float4 outmost = GetOutermostScreenPixelCoords();
+				//float4 crossLine = outmost.xwzw - outmost.zyxy; 				
+				float2 intsectOnCrossLine;
+				if(isLightDirLeft > 0)
+					intsectOnCrossLine = lerp(outmost.xw, outmost.zy, i.uv.x);
+				else
+					intsectOnCrossLine = lerp(outmost.xy, outmost.zw, i.uv.x);
 
 				fixed4 col = 0;
-				if(length(uv - exitPoint < 0.05))
-					col = float4(1,1,0,0); 
+				if(length(i.uv - intsectOnCrossLine) < 0.02)
+					col = fixed4(1,1,0,0);
 				return col;
 			}
 			ENDCG
