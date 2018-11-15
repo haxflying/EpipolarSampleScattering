@@ -5,6 +5,9 @@ using UnityEngine.Rendering;
 
 public class ScatteringEffects : MonoBehaviour {
 
+    public Shader debugShader;
+    private Material debugMat;
+
     public int Slices = 256, Samples;
     public MaterialSource matSource;
 
@@ -26,6 +29,8 @@ public class ScatteringEffects : MonoBehaviour {
 
         cam.AddCommandBuffer(CameraEvent.BeforeImageEffects, cmd);
         print("Cb registed!");
+
+        debugMat = new Material(debugShader);
 
         InitVariable();
     }
@@ -59,6 +64,6 @@ public class ScatteringEffects : MonoBehaviour {
 
     private void OnRenderImage(RenderTexture src, RenderTexture dst)
     {
-        Graphics.Blit(res, dst);
+        Graphics.Blit(res, dst, debugMat);
     }
 }

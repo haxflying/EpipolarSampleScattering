@@ -54,10 +54,24 @@
 				else
 					intsectOnCrossLine = lerp(outmost.xy, outmost.zw, i.uv.x);
 
-				fixed4 col = 0;
-				if(length(i.uv - intsectOnCrossLine) < 0.02)
-					col = fixed4(1,1,0,0);
-				return col;
+				float k = lightDir.y/lightDir.x;
+				float4 intesectOnBound = 0;
+				intesectOnBound.x = k * (1 - intsectOnCrossLine.x) + intsectOnCrossLine.y;
+				intesectOnBound.y = k * (0 - intsectOnCrossLine.x) + intsectOnCrossLine.y;
+				intesectOnBound.z = 1/k * (1 - intsectOnCrossLine.y) + intsectOnCrossLine.x;
+				intesectOnBound.w = 1/k * (0 - intsectOnCrossLine.y) + intsectOnCrossLine.x;
+
+				fixed4 isValidIntsect = (intesectOnBound >= 0 && intesectOnBound <= 1);
+				intesectOnBound *= isValidIntsect; //与0，0点相交的就不要啦
+
+				float4 startPoint = float4(1, intesectOnBound.x, intesectOnBound.z, 1) * isValidIntsect.xxzz;
+				float4 endPoint = float4(0, intesectOnBound.y, intesectOnBound.w, 0) * isValidIntsect.yyww;
+
+				float2 start, end;
+				start = startPoint.x > 0 ? startPoint.xy : startPoint.zw;
+				end = endPoint.y > 0 ? endPoint.xy : endPoint.zw;
+
+				return float4(start, end);
 			}
 			ENDCG
 		}
