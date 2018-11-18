@@ -1,4 +1,4 @@
-﻿Shader "Hidden/EndPointCheck"
+﻿Shader "Hidden/SamplerCoords"
 {
 	Properties
 	{
@@ -16,6 +16,7 @@
 			#pragma fragment frag
 			
 			#include "UnityCG.cginc"
+			#include "Common.cginc"
 
 			struct appdata
 			{
@@ -37,12 +38,19 @@
 				return o;
 			}
 			
-			sampler2D _MainTex;
-
+			UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
+			//slices * 1
+			sampler2D tex2DSliceEndPoints;
+ 			//target : samples * slices
 			fixed4 frag (v2f i) : SV_Target
 			{
-				float4 col = tex2D(_MainTex, i.uv);								
-				return col;
+				fixed4 startEnd = tex2D(tex2DSliceEndPoints, float2(i.uv.y, 1));
+				float posOnEpopolarLine = i.uv.x - 0.5/SamplerNum;
+				posOnEpopolarLine *= SamplerNum/(SamplerNum - 1);
+				posOnEpopolarLine = saturate(posOnEpopolarLine);
+				float2 coord = lerp(startEnd.xy, startEnd.zw, posOnEpopolarLine);
+				float camZ = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, coord);
+				return float4(coord, camZ, 0);
 			}
 			ENDCG
 		}

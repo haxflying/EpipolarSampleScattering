@@ -12,3 +12,7 @@ MonoBehaviour:
   m_Name: MatSource
   m_EditorClassIdentifier: 
   sliceEndPointShader: {fileID: 4800000, guid: 0228babd80c83a64196e3ae1712b78d8, type: 3}
+  samplerCoordsShader: {fileID: 4800000, guid: 7a6251a92801fcf4a95764e617326e8d, type: 3}
+  sliceUVDirAndOriginShader: {fileID: 4800000, guid: 684a4c7027c65854a922481ee856764e,
+    type: 3}
+  minmaxTreeShader: {fileID: 4800000, guid: 2bddc2e7a56b6ff499d5173c858c5b1d, type: 3}

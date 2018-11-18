@@ -1,4 +1,4 @@
-﻿Shader "Hidden/EndPointCheck"
+﻿Shader "Hidden/ConstructMinMaxTree"
 {
 	Properties
 	{
@@ -41,7 +41,9 @@
 
 			fixed4 frag (v2f i) : SV_Target
 			{
-				float4 col = tex2D(_MainTex, i.uv);								
+				fixed4 col = tex2D(_MainTex, i.uv);
+				// just invert the colors
+				col.rgb = 1 - col.rgb;
 				return col;
 			}
 			ENDCG
