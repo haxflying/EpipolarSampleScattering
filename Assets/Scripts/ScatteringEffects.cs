@@ -135,10 +135,12 @@ public class ScatteringEffects : MonoBehaviour {
             if(step == 2)
             {
                 cb.SetGlobalTexture("tex2DminmaxSource", shadowmap);
+                cb.EnableShaderKeyword("_INIT");
             }
             else
             {
                 cb.SetGlobalTexture("tex2DminmaxSource", minmaxs[(parity + 1) % 2]);
+                cb.DisableShaderKeyword("_INIT");
             }
 
             Rect viewport = new Rect(XOffset, 0, sm_res / step, sm_res);

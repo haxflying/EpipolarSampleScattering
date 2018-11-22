@@ -14,6 +14,7 @@
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
+			#pragma multi_compile __ _INIT
 			
 			#include "UnityCG.cginc"
 
@@ -37,14 +38,50 @@
 				return o;
 			}
 			
-			sampler2D _MainTex;
+			Texture2D tex2DShadowmapCopy;
+			SamplerState samplertex2DShadowmapCopy;
 
-			fixed4 frag (v2f i) : SV_Target
+			sampler2D _MainTex;			
+			sampler2D tex2DminmaxSource;
+			sampler2D tex2DSliceUVDirAndOrigin;
+			int _SrcXOffset;
+			int _DstXOffset;
+
+			//target : sm_res * sm_res
+			fixed4 Init (v2f i)
 			{
-				fixed4 col = tex2D(_MainTex, i.uv);
-				// just invert the colors
-				col.rgb = 1 - col.rgb;
-				return col;
+				float sliceInd = i.uv.y;
+				float4 sliceUVAndOrigin = tex2D(tex2DSliceUVDirAndOrigin, float2(sliceInd, 0.5));
+				float2 currUV = sliceUVAndOrigin.xy + sliceUVAndOrigin.zw * floor(i.uv.x) * 2.0;
+				float4 minDepth = 1;
+				float4 maxDepth = 0;
+
+				float4 depths = tex2DShadowmapCopy.Gather(samplertex2DShadowmapCopy, currUV);
+				minDepth = min(minDepth, depths);
+				maxDepth = max(maxDepth, depths);
+
+				minDepth.xy = min(minDepth.xy, minDepth.zw);
+				minDepth.x = min(minDepth.x, minDepth.y);
+
+				maxDepth.xy = max(maxDepth.xy, maxDepth.zw);
+				maxDepth.x = max(maxDepth.x, maxDepth.y);				
+				
+				return float4(minDepth.x, maxDepth.x, 0, 0);
+			}
+
+			fixed4 ComputeMinMaxLevel(v2f i)
+			{
+
+			}
+
+			fixed4 frag(v2f i) : SV_Target
+			{
+				#if _INIT
+					return Init(i);
+				#else
+					return ComputeMinMaxLevel(i);
+				#endif
+				return 0;
 			}
 			ENDCG
 		}
