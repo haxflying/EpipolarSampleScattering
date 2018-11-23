@@ -15,7 +15,7 @@
 			#pragma vertex vert
 			#pragma fragment frag
 			#pragma multi_compile __ _INIT
-			
+			#pragma target 5.0
 			#include "UnityCG.cginc"
 
 			struct appdata
@@ -71,7 +71,16 @@
 
 			fixed4 ComputeMinMaxLevel(v2f i)
 			{
+				float2 uv = i.uv * _ScreenParams.xy;
+				float2 sample0Ind = float2(_SrcXOffset + (uv.x - _DstXOffset) * 2, uv.y);
+				float2 sample1Ind = sample0Ind + float2(1,0);
+				float2 minmax0 = tex2D(tex2DminmaxSource, sample0Ind/_ScreenParams.xy);
+				float2 minmax1 = tex2D(tex2DminmaxSource, sample1Ind/_ScreenParams.xy);
 
+				float2 minmax;
+				minmax.x = min(minmax0.x, minmax1.x);
+				minmax.y = max(minmax0.y, minmax1.y);
+				return float4(minmax, 0, 0);
 			}
 
 			fixed4 frag(v2f i) : SV_Target

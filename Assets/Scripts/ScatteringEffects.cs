@@ -59,6 +59,7 @@ public class ScatteringEffects : MonoBehaviour {
         if (sm_cpy == null)
             return;
 
+        sm_cpy.Clear();
         int shadowmap = -1;
         CopyShadowmap(sm_cpy, ref shadowmap);
 
@@ -68,7 +69,8 @@ public class ScatteringEffects : MonoBehaviour {
         cmd.Clear();
         RenderSliceEndPoint(cmd);
         RenderSamplerCoords(cmd);
-        RenderSliceSMDirAndOrigin(cmd);     
+        RenderSliceSMDirAndOrigin(cmd);
+        ConstructMinMaxTree(cmd, shadowmap);
     }
 
     private void InitVariable()
@@ -105,30 +107,40 @@ public class ScatteringEffects : MonoBehaviour {
         cb.GetTemporaryRT(texId, Slices, 1);
         cb.Blit(texId, texId, mat);
 
-        cb.Blit(texId, res);
+        //cb.Blit(texId, res);
     }
 
     private void CopyShadowmap(CommandBuffer cb, ref int shadowMap_Copy)
     {
+        int sm_res = 1024;
         shadowMap_Copy = Shader.PropertyToID(TextureSources.shadowmap_Copy);
+        cb.GetTemporaryRT(shadowMap_Copy, sm_res, sm_res, 0, FilterMode.Bilinear, RenderTextureFormat.RHalf);
         RenderTargetIdentifier shadowmap = BuiltinRenderTextureType.CurrentActive;
         cb.SetShadowSamplingMode(shadowmap, ShadowSamplingMode.RawDepth);
         cb.Blit(shadowmap, shadowMap_Copy);
+        cb.Blit(shadowMap_Copy, res);
     }
 
     private void ConstructMinMaxTree(CommandBuffer cb, int shadowmap)
     {
         int sm_res = 1024;
-        RenderTexture minmax0 = RenderTexture.GetTemporary(sm_res, sm_res);
-        RenderTexture minmax1 = RenderTexture.GetTemporary(sm_res, sm_res);
+        int minmax0 = Shader.PropertyToID(TextureSources.minMaxTree);
+        int minmax1 = Shader.PropertyToID(TextureSources.minmaxTemp);
 
-        RenderTexture[] minmaxs = new RenderTexture[] { minmax0, minmax1 };
+        Material mat = matSource.minmaxTreeMat;
+
+        cb.GetTemporaryRT(minmax0, sm_res, sm_res);
+        cb.GetTemporaryRT(minmax1, sm_res, sm_res);
+
+        int[] minmaxs = new int[] { minmax0, minmax1 };
         int parity = 0;
         int preXOffset = 0;
         int XOffset = 0;
-        for (int step = 2; step < 7; step *= 2, parity = (parity + 1) % 2)
+        for (int step = 2; step < 20; step *= 2, parity = (parity + 1) % 2)
         {
             cb.SetRenderTarget(minmaxs[parity]);
+            //debug
+            cb.ClearRenderTarget(true, true, Color.gray);
             cb.SetGlobalInt("_SrcXOffset", preXOffset);
             cb.SetGlobalInt("_DstXOffset", XOffset);
 
@@ -145,7 +157,7 @@ public class ScatteringEffects : MonoBehaviour {
 
             Rect viewport = new Rect(XOffset, 0, sm_res / step, sm_res);
             cb.SetViewport(viewport);
-            cb.Blit(null, BuiltinRenderTextureType.CurrentActive);
+            cb.Blit(0, BuiltinRenderTextureType.CurrentActive, mat);
             
             if(parity == 1)
             {
@@ -156,6 +168,8 @@ public class ScatteringEffects : MonoBehaviour {
             preXOffset = XOffset;
             XOffset += sm_res / step;
         }
+
+        //cb.Blit(destId, res);
     }
 
     private void OnRenderImage(RenderTexture src, RenderTexture dst)

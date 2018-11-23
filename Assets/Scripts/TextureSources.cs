@@ -9,4 +9,15 @@ public class TextureSources {
     public static string sliceUVDirAndOrigin = "tex2DSliceUVDirAndOrigin";
     public static string minMaxTree = "tex2DminmaxTree";
     public static string shadowmap_Copy = "tex2DShadowmapCopy";
+    public static string minmaxTemp = "tex2DminmaxTemp";
+}
+
+
+public enum RenderRes
+{
+    sliceEndPoints,
+    samplerCoords,
+    sliceUVDirAndOrigin,
+    minMaxTree,
+    shadowmap_Copy
 }
