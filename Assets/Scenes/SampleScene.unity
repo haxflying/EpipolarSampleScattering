@@ -358,6 +358,7 @@ MonoBehaviour:
   debugShader: {fileID: 4800000, guid: c745ff17c0038a342b0827e5b28332a7, type: 3}
   Slices: 256
   Samples: 128
+  mainLight: {fileID: 170076734}
   matSource: {fileID: 11400000, guid: a3d4d3ff3e3f0de4a8a2e721e0bac10d, type: 2}
 --- !u!1 &1485762047
 GameObject:

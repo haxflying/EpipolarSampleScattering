@@ -157,6 +157,7 @@ public class ScatteringEffects : MonoBehaviour {
 
             Rect viewport = new Rect(XOffset, 0, sm_res / step, sm_res);
             cb.SetViewport(viewport);
+            cb.SetGlobalVector("_viewPortParams", new Vector4(viewport.width, viewport.height, 1 / viewport.width, 1 / viewport.height));
             cb.Blit(0, BuiltinRenderTextureType.CurrentActive, mat);
             
             if(parity == 1)

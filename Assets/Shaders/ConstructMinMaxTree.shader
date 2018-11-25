@@ -46,6 +46,7 @@
 			sampler2D tex2DSliceUVDirAndOrigin;
 			int _SrcXOffset;
 			int _DstXOffset;
+			float4 _viewPortParams;
 
 			//target : sm_res * sm_res
 			fixed4 Init (v2f i)
@@ -70,12 +71,13 @@
 			}
 
 			fixed4 ComputeMinMaxLevel(v2f i)
-			{
-				float2 uv = i.uv * _ScreenParams.xy;
-				float2 sample0Ind = float2(_SrcXOffset + (uv.x - _DstXOffset) * 2, uv.y);
+			{	
+				//return i.uv.x;				
+				float2 uv = i.uv * _viewPortParams.xy;
+				float2 sample0Ind = float2(_SrcXOffset + uv.x * 2, uv.y);
 				float2 sample1Ind = sample0Ind + float2(1,0);
-				float2 minmax0 = tex2D(tex2DminmaxSource, sample0Ind/_ScreenParams.xy);
-				float2 minmax1 = tex2D(tex2DminmaxSource, sample1Ind/_ScreenParams.xy);
+				float2 minmax0 = tex2D(tex2DminmaxSource, sample0Ind * _viewPortParams.zw);
+				float2 minmax1 = tex2D(tex2DminmaxSource, sample1Ind * _viewPortParams.zw);
 
 				float2 minmax;
 				minmax.x = min(minmax0.x, minmax1.x);
