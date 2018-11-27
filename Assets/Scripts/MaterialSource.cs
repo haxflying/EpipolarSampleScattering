@@ -60,4 +60,32 @@ public class MaterialSource : ScriptableObject{
             return m_minmaxTreeMat;
         }
     }
+
+    [SerializeField]
+    private Shader inScatteringShader;
+
+    private Material m_inScatteringMat;
+    public Material inScatteringMat
+    {
+        get
+        {
+            if (m_inScatteringMat)
+                m_inScatteringMat = new Material(inScatteringShader);
+            return m_inScatteringMat;
+        }
+    }
+
+    [SerializeField]
+    private Shader m_unwrapShader;
+
+    private Material m_unwrapMat;
+    public Material unwrapMat
+    {
+        get
+        {
+            if (m_unwrapMat == null)
+                m_unwrapMat = new Material(m_unwrapShader);
+            return m_unwrapMat;
+        }
+    }
 }

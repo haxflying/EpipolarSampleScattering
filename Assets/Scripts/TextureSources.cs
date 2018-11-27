@@ -10,6 +10,8 @@ public class TextureSources {
     public static string minMaxTree = "tex2DminmaxTree";
     public static string shadowmap_Copy = "tex2DShadowmapCopy";
     public static string minmaxTemp = "tex2DminmaxTemp";
+    public static string inScattering = "tex2DInsctr";
+    public static string unWrapping = "tex2DUnwrap";
 }
 
 

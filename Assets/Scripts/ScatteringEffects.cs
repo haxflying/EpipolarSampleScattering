@@ -173,6 +173,14 @@ public class ScatteringEffects : MonoBehaviour {
         //cb.Blit(destId, res);
     }
 
+    private void RayMarching(CommandBuffer cb)
+    {
+        int texId = Shader.PropertyToID(TextureSources.inScattering);
+        Material mat = matSource.inScatteringMat;
+        cb.GetTemporaryRT(texId, Samples, Slices);
+        cb.Blit(texId, texId, mat);
+    }
+
     private void OnRenderImage(RenderTexture src, RenderTexture dst)
     {
         Graphics.Blit(res, dst, debugMat);

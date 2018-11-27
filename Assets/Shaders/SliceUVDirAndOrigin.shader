@@ -56,7 +56,7 @@
 			//target slices * cascade (1)
 			fixed4 frag (v2f i) : SV_Target
 			{
-				i.ray.xyz *= 20;
+				i.ray *= i.ray * (_ProjectionParams.z / i.ray.z);;
 				uint cascade = 1;//i.uv.y;
 				float4 startEnd = tex2D(tex2DSliceEndPoints, float2(i.uv.x, cascade));
 
